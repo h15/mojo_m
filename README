@@ -1,0 +1,53 @@
+NAME
+
+MojoM - Mojo Models.
+
+OVERVIEW
+
+MojoM - easy model system for Mojolicious. It makes dynamic Rose::DB models in
+temporary dirrectory, after that it uses them.
+
+MojoM provides helper "model" to set current model, init for setup table params,
+get to load accounts form table and return Rose::DB::Object.
+
+EXAMPLE
+
+package MojoM;
+use Mojo::Base 'Mojolicious';
+
+# This method will run once at server start
+sub startup {
+    my $self = shift;
+
+    $self->plugin (
+        'mojo_m' => {
+            driver   => 'mysql',
+            database => 'MojoM',
+            host     => 'localhost',
+            username => 'MojoM',
+            password => 'MojoM',
+        }
+    );
+    
+    $self->model('User')->init (
+        table      => 'users',
+        columns    => [
+            id           => { type => 'serial' , not_null => 1 },
+            ...
+        ],
+        pk_columns => 'id'
+    );
+    
+    my $user = $self->model('User')->get( id => 1 );
+    
+    print $user->name;
+}
+
+1;
+
+COPYRIGHT AND LICENSE
+
+Copyright (C) 2011, Georgy Bazhukov.
+
+This program is free software, you can redistribute it and/or modify it under
+the terms of the Artistic License version 2.0.
